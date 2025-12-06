@@ -1,0 +1,14 @@
+# Sanal Ortam (Gönderme, herkes kendininkini kurar)
+venv/
+.venv/
+
+# Python Derleme Dosyaları (Çöp)
+__pycache__/
+*.pyc
+
+# Veritabanı (Gönderme, içinde kullanıcı verisi var)
+*.db
+*.sqlite3
+
+# Sistem Dosyaları
+.DS_Store
