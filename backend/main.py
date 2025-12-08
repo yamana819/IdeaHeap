@@ -14,6 +14,7 @@ MONTH_CONSTANT=2.0
 SQLALCHEMY_DATABASE_URL = "sqlite:///./IdeaVault.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 def get_db():
@@ -139,8 +140,8 @@ def complete_project(project_id:int,db:Session=Depends(get_db)):
     db_project=db.query(Project).filter(Project.id==project_id).first()
     if not db_project:
         raise HTTPException(status_code=404,detail="Project not found.")
-    if db_project.status=="Completed":
-        raise HTTPException(status_code=400,detail="Project is already completed")
+    if db_project.status!="Implementation":
+        raise HTTPException(status_code=400,detail="Project is already completed or is not started yet")
     db_project.status="Completed"
     db_project.finished_at=datetime.now()
     user=db_project.owner
