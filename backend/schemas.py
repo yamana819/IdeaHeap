@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,computed_field
 from datetime import date,datetime
 from typing import Optional,List
 
@@ -47,4 +47,12 @@ class UserResponse(UserBase):
     last_active_date:Optional[date]=None
     class Config:
         from_attributes=True
+    @computed_field
+    def rank(self)->str:
+        if self.total_xp<1000:
+            return "Junior Developer"
+        elif self.total_xp<5000:
+            return "Mid Level Developer"
+        else:
+            return "Senior Developer"
 
