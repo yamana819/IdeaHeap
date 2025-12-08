@@ -68,6 +68,8 @@ def create_log(project_id:int,log:schemas.LogCreate,db:Session=Depends(get_db)):
     db_project=db.query(Project).filter(Project.id==project_id).first()
     if not db_project:
         raise HTTPException(status_code=404,detail="Project not found.")
+    if db_project.status=="Completed":
+        raise HTTPException(status_code=400,detail="Cannot add logs to a completed project")
     new_log=ProjectLog(**log.dict(),project_id=project_id)
     db.add(new_log)
     user=db_project.owner
@@ -76,12 +78,24 @@ def create_log(project_id:int,log:schemas.LogCreate,db:Session=Depends(get_db)):
     db.refresh(new_log)
     return new_log
 
+@app.get("/users/{user_id}",response_model=schemas.UserResponse)
+def read_user(user_id:int,db:Session=Depends(get_db)):
+    db_user=db.query(User).filter(User.id==user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404,detail="User not found")
+    return db_user
+
 @app.get("/users/{user_id}/projects/", response_model=List[schemas.ProjectResponse])
 def read_user_projects(user_id: int, db: Session = Depends(get_db)):
     projects=db.query(Project).filter(Project.owner_id==user_id).all()
     return projects
 
-@app.put("/projects/{project_id}/complete",response_model=schemas.ProjectResponse)
+@app.get("/projects/{project_id}/logs",response_model=schemas.LogResponse)
+def read_project_logs(project_id:int,db:Session=Depends(get_db)):
+    logs=db.query(ProjectLog).filter(ProjectLog.project_id==project_id).all()
+    return logs 
+
+@app.put("/projects/{project_id}/complete",response_model=list[schemas.ProjectResponse])
 def complete_project(project_id:int,db:Session=Depends(get_db)):
     db_project=db.query(Project).filter(Project.id==project_id).first()
     if not db_project:
