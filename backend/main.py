@@ -90,12 +90,51 @@ def read_user_projects(user_id: int, db: Session = Depends(get_db)):
     projects=db.query(Project).filter(Project.owner_id==user_id).all()
     return projects
 
-@app.get("/projects/{project_id}/logs",response_model=schemas.LogResponse)
+@app.get("/projects/{project_id}/logs",response_model=list[schemas.LogResponse])
 def read_project_logs(project_id:int,db:Session=Depends(get_db)):
     logs=db.query(ProjectLog).filter(ProjectLog.project_id==project_id).all()
     return logs 
 
-@app.put("/projects/{project_id}/complete",response_model=list[schemas.ProjectResponse])
+@app.put("/projects/{project_id}",response_model=schemas.ProjectResponse)
+def update_project(project_id:int ,updated_project:schemas.ProjectCreate,db:Session=Depends(get_db)):
+    db_project=db.query(Project).filter(Project.id==project_id).first()
+    if not db_project:
+        raise HTTPException(status_code=404,detail="Project not found")
+    if db_project.status=="Completed":
+        raise HTTPException(status_code=400,detail="Cannot edit a completed project")
+    db_project.title=updated_project.title
+    db_project.description=updated_project.description
+    db_project.tech_stack=updated_project.tech_stack
+    db_project.deadline=updated_project.deadline
+    db.commit()
+    db.refresh(db_project)
+    return db_project
+
+@app.put("/logs/{log_id}",response_model=schemas.LogResponse)
+def update_log(log_id:int,updated_log:schemas.LogCreate,db:Session=Depends(get_db)):
+    db_log=db.query(ProjectLog).filter(ProjectLog.id==log_id).first()
+    if not db_log:
+        raise HTTPException(status_code=404,detail="Log not found.")
+    if db_log.project.status=="Completed":
+        raise HTTPException(status_code=400,detail="Cannot edit logs of a completed project")
+    db_log.content=updated_log.content
+    db.commit()
+    db.refresh(db_log)
+    return db_log
+
+@app.put("/projects/{project_id}/start",response_model=schemas.ProjectResponse)
+def start_project(project_id:int,db:Session=Depends(get_db)):
+    db_project=db.query(Project).filter(Project.id==project_id).first()
+    if not db_project:
+        raise HTTPException(status_code=404,detail="Project not found")
+    if db_project.status!="Idea":
+        raise HTTPException(status_code=400,detail="Project is already started or completed")
+    db_project.status="Implementation"
+    db.commit()
+    db.refresh(db_project)
+    return db_project
+
+@app.put("/projects/{project_id}/complete",response_model=schemas.ProjectResponse)
 def complete_project(project_id:int,db:Session=Depends(get_db)):
     db_project=db.query(Project).filter(Project.id==project_id).first()
     if not db_project:
@@ -110,3 +149,12 @@ def complete_project(project_id:int,db:Session=Depends(get_db)):
     db.commit()
     db.refresh(db_project)
     return db_project
+
+@app.delete("/projects/{project_id}")
+def delete_project(project_id:int,db:Session=Depends(get_db)):
+    db_project=db.query(Project).filter(Project.id==project_id).first()
+    if not db_project:
+        raise HTTPException(status_code=404,detail="Project not found")
+    db.delete(db_project)
+    db.commit()
+    return {"message":"Project deleted successfully"}
