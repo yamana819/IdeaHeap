@@ -1,10 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session,sessionmaker
 from typing import List
 import models, schemas
 from models import User, Project, ProjectLog
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 
 DEFAULT_XP=50
