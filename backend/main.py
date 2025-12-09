@@ -90,7 +90,7 @@ def read_user_projects(user_id: int, db: Session = Depends(get_db)):
     projects=db.query(Project).filter(Project.owner_id==user_id).all()
     return projects
 
-@app.get("/projects/{project_id}/logs",response_model=list[schemas.LogResponse])
+@app.get("/projects/{project_id}/logs",response_model=List[schemas.LogResponse])
 def read_project_logs(project_id:int,db:Session=Depends(get_db)):
     logs=db.query(ProjectLog).filter(ProjectLog.project_id==project_id).all()
     return logs 
