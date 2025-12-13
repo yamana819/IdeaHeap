@@ -1,11 +1,14 @@
+import Navbar from './components/Navbar'
+
 function App() {
   return (
-    <div className="h-screen w-full bg-slate-900 flex items-center justify-center">
-      <h1 className="text-5xl font-bold text-blue-500">
-        Tailwind Manuel Kurulum Başarılı! 🚀
-      </h1>
+    <div className="min-h-screen bg-slate-900">
+      <Navbar />
+      <div className="p-10 text-white text-center">
+        <h1 className="text-4xl font-bold mb-4">Ana İçerik Alanı</h1>
+        <p>Burası Navbar'ın altındaki dinamik alan.</p>
+      </div>
     </div>
   )
 }
-
 export default App
