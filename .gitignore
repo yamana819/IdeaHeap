@@ -1,14 +1,67 @@
-# Sanal Ortam (Gönderme, herkes kendininkini kurar)
+# ========================
+# GENEL SİSTEM & EDİTÖR
+# ========================
+.DS_Store
+Thumbs.db
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# VS Code Ayarları (Kişisel ayarlar gitmesin)
+.vscode/*
+# Ancak takım için önerilen eklenti listesi gitsin (İyi pratik)
+!.vscode/extensions.json
+
+# ========================
+# LOGLAR (Hata kayıtları)
+# ========================
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ========================
+# FRONTEND (React/Vite)
+# ========================
+# Kütüphaneler
+node_modules/
+
+# Build Çıktıları
+dist/
+dist-ssr/
+
+# Yerel Ortam Ayarları
+*.local
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ========================
+# BACKEND (Python/FastAPI)
+# ========================
+# Sanal Ortam
 venv/
 .venv/
+env/
 
-# Python Derleme Dosyaları (Çöp)
+# Python Derleme Dosyaları
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# Veritabanı (Gönderme, içinde kullanıcı verisi var)
+# Veritabanı
 *.db
 *.sqlite3
+*.sqlite
 
-# Sistem Dosyaları
-.DS_Store
+# Pytest
+.pytest_cache/
