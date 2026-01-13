@@ -10,7 +10,7 @@ DEFAULT_XP=50
 WEEK_CONSTANT=1.5
 MONTH_CONSTANT=2.0 
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./IdeaVault.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./IdeaHeap.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 models.Base.metadata.create_all(bind=engine)

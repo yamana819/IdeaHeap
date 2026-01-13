@@ -4,7 +4,7 @@ const Navbar = () => {
   return (
     <nav className="bg-slate-900 text-white p-4 shadow-lg flex justify-between items-center">
       <div className="text-2xl font-bold text-blue-500 cursor-pointer hover:text-blue-400 transition">
-        IdeaVault
+        IdeaHeap
       </div>
       <div className="flex gap-6 items-center">
         <button className="hover:text-blue-300 transition font-medium">
