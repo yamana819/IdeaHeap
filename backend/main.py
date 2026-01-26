@@ -5,6 +5,7 @@ import models, schemas
 from models import User, Project, ProjectLog
 from sqlalchemy import create_engine
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
 
 DEFAULT_XP=50
 WEEK_CONSTANT=1.5
@@ -15,6 +16,13 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:5173"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"]
+)
 
 def get_db():
     db = SessionLocal()
