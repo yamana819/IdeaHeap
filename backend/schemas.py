@@ -15,6 +15,9 @@ class LogResponse(LogBase):
     class Config:
         from_attributes=True
 
+class LogUpdate(BaseModel):
+    content: Optional[str]=None
+
 class ProjectBase(BaseModel):
     title:str
     description:Optional[str]=None
@@ -33,6 +36,13 @@ class ProjectResponse(ProjectBase):
     logs:List[LogResponse]=[]
     class Config:
         from_attributes=True
+
+class ProjectUpdate(BaseModel):
+    title:Optional[str]=None
+    description:Optional[str]=None
+    status:Optional[str]=None
+    tech_stack:Optional[str]=None
+    deadline:Optional[date]=None 
 
 class UserBase(BaseModel):
     username:str
@@ -56,3 +66,6 @@ class UserResponse(UserBase):
         else:
             return "Senior Developer"
 
+class UserUpdate(BaseModel):
+    username:Optional[str]=None
+    password:Optional[str]=None

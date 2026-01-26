@@ -32,7 +32,12 @@ export const getProject = async(userId) =>{
 }
 
 export const getProjectLogs = async(projectId) =>{
-    const response = await api.get(`/projects/${projectId}`);
+    const response = await api.get(`/projects/${projectId}/logs`);
+    return response.data;
+}
+
+export const updateUser = async(userId,userData) =>{
+    const response = await api.put(`/users/${userId}`,userData);
     return response.data;
 }
 
@@ -56,10 +61,19 @@ export const completeProject = async(projectId) =>{
     return response.data;
 }
 
+export const deleteUser = async(userId) =>{
+    const response = await api.delete(`/users/${userId}`);
+    return response.data;
+}
+
 export const deleteProject = async(projectId) =>{
     const response = await api.delete(`/projects/${projectId}`);
     return response.data;
 }
 
+export const deleteLog = async(logId) =>{
+    const response = await api.delete(`/logs/${logId}`);
+    return response.data; 
+}
 
 export default api;

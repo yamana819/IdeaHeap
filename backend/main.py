@@ -30,6 +30,7 @@ def get_db():
         yield db 
     finally:
         db.close()
+
 def update_user_progress(user):
     today=datetime.now().date()
     last_active=user.last_active_date
@@ -103,29 +104,45 @@ def read_project_logs(project_id:int,db:Session=Depends(get_db)):
     logs=db.query(ProjectLog).filter(ProjectLog.project_id==project_id).all()
     return logs 
 
+@app.put("/users/{user_id}",response_model=schemas.UserResponse)
+def update_user(user_id:int,user_update:schemas.UserUpdate,db:Session=Depends(get_db)):
+    db_user=db.query(User).filter(User.id==user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404,detail="User not found.")
+    if user_update.username is not None and user_update.username != db_user.username:
+        existing_user = db.query(User).filter(User.username == user_update.username).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Username already taken")
+        db_user.username = user_update.username
+    if user_update.password is not None:
+        db_user.password = user_update.password
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+    
 @app.put("/projects/{project_id}",response_model=schemas.ProjectResponse)
-def update_project(project_id:int ,updated_project:schemas.ProjectCreate,db:Session=Depends(get_db)):
+def update_project(project_id:int ,updated_project:schemas.ProjectUpdate,db:Session=Depends(get_db)):
     db_project=db.query(Project).filter(Project.id==project_id).first()
     if not db_project:
         raise HTTPException(status_code=404,detail="Project not found")
     if db_project.status=="Completed":
         raise HTTPException(status_code=400,detail="Cannot edit a completed project")
-    db_project.title=updated_project.title
-    db_project.description=updated_project.description
-    db_project.tech_stack=updated_project.tech_stack
-    db_project.deadline=updated_project.deadline
+    update_data=updated_project.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_project, key, value)
     db.commit()
     db.refresh(db_project)
     return db_project
 
 @app.put("/logs/{log_id}",response_model=schemas.LogResponse)
-def update_log(log_id:int,updated_log:schemas.LogCreate,db:Session=Depends(get_db)):
+def update_log(log_id:int,updated_log:schemas.LogUpdate,db:Session=Depends(get_db)):
     db_log=db.query(ProjectLog).filter(ProjectLog.id==log_id).first()
     if not db_log:
         raise HTTPException(status_code=404,detail="Log not found.")
     if db_log.project.status=="Completed":
         raise HTTPException(status_code=400,detail="Cannot edit logs of a completed project")
-    db_log.content=updated_log.content
+    if updated_log.content is not None:
+        db_log.content=updated_log.content
     db.commit()
     db.refresh(db_log)
     return db_log
@@ -158,6 +175,15 @@ def complete_project(project_id:int,db:Session=Depends(get_db)):
     db.refresh(db_project)
     return db_project
 
+@app.delete("/users/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    db.delete(db_user)
+    db.commit()
+    return {"message": "User account and all related data deleted successfully"}
+
 @app.delete("/projects/{project_id}")
 def delete_project(project_id:int,db:Session=Depends(get_db)):
     db_project=db.query(Project).filter(Project.id==project_id).first()
@@ -166,3 +192,14 @@ def delete_project(project_id:int,db:Session=Depends(get_db)):
     db.delete(db_project)
     db.commit()
     return {"message":"Project deleted successfully"}
+
+@app.delete("/logs/{log_id}")
+def delete_log(log_id: int, db: Session = Depends(get_db)):
+    db_log = db.query(ProjectLog).filter(ProjectLog.id == log_id).first()
+    if not db_log:
+        raise HTTPException(status_code=404, detail="Log not found")
+    if db_log.project.status == "Completed":
+        raise HTTPException(status_code=400, detail="Cannot delete logs of a completed project")
+    db.delete(db_log)
+    db.commit()
+    return {"message": "Log deleted successfully"}

@@ -12,7 +12,7 @@ class User(Base):
     total_xp=Column(Integer,default=0)
     current_streak=Column(Integer,default=0)
     last_active_date=Column(Date,nullable=True)
-    projects=relationship("Project",back_populates="owner")
+    projects = relationship("Project", back_populates="owner", cascade="all, delete-orphan")
 
 class Project(Base):
     __tablename__="projects"
@@ -26,7 +26,7 @@ class Project(Base):
     finished_at=Column(DateTime,nullable=True)
     owner_id=Column(Integer,ForeignKey("users.id"))
     owner=relationship("User",back_populates="projects")
-    logs=relationship("ProjectLog",back_populates="project")
+    logs = relationship("ProjectLog", back_populates="project", cascade="all, delete-orphan")
 
 class ProjectLog(Base):
     __tablename__="project_logs"
