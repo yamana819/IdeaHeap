@@ -8,12 +8,12 @@ Inspired by dynamic memory allocation (heap), the project integrates a **Gamific
 
 ## 🛠 Tech Stack
 
-This project uses a modern **Monorepo** architecture.
+This project uses a modern **Monorepo** architecture powered by **cutting-edge** technologies.
 
 | Layer | Technologies |
 | :--- | :--- |
 | **Backend** | Python, FastAPI, SQLAlchemy, **PostgreSQL** |
-| **Frontend** | React 18, Vite, **Tailwind CSS**, Lucide React |
+| **Frontend** | **React 19**, Vite, **Tailwind CSS**, Lucide React |
 | **Database & ORM** | PostgreSQL, Psycopg2, SQLAlchemy |
 | **Security & Auth** | Bcrypt (Passlib), Dotenv |
 | **Architecture** | RESTful API, Pydantic Models, MVC Pattern |
@@ -29,4 +29,3 @@ This project uses a modern **Monorepo** architecture.
 * **📝 Dev Logs:** Keep detailed technical logs for every project.
 * **🎨 Modern UI:** A sleek interface designed with **Tailwind CSS** (Dark Mode focused).
 * **🔒 Security:** Secure password hashing with **Bcrypt** and environment variable management.
-
