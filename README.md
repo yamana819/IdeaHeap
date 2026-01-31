@@ -31,3 +31,17 @@ This project uses a modern **Monorepo** architecture.
 * **🎨 Modern UI:** A sleek interface designed with **Tailwind CSS** (Dark Mode focused).
 * **🔒 Security:** Secure password hashing with **Bcrypt** and environment variable management.
 
+## 📂 Project Structure
+
+```bash
+IdeaHeap/
+├── backend/            # FastAPI, SQLAlchemy, PostgreSQL Models
+│   ├── main.py         # API Endpoints & Game Logic
+│   ├── models.py       # Database Tables
+│   ├── schemas.py      # Pydantic Data Schemas
+│   ├── .env            # Environment Variables (DB URL)
+│   └── venv/           # Python Virtual Environment
+├── frontend/           # React & Tailwind CSS Interface
+│   ├── src/components  # ProjectCard, ProjectDetail etc.
+│   └── tailwind.config # Style Configuration
+└── README.md           # Project Documentation
