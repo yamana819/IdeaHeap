@@ -12,7 +12,7 @@ const Sidebar = ({activeTab,onTabChange}) => {
         <aside className="w-64 bg-slate-950 border-r border-slate-800 flex flex-col p-6 hidden md:flex text-slate-300 h-screen">
             <div className="flex items-center space-x-3 mb-10 px-2">
                 <div className="bg-indigo-600 p-2 rounded-lg shadow-lg shadow-indigo-500/20 ">
-                    <Zap size={24} className="text-white" fill="white"/>
+                    <Zap size={24} className="text-cyan-400" fill="currentColor"/>
                 </div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
                     IdeaHeap    

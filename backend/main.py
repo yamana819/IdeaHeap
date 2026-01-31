@@ -1,21 +1,30 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.orm import Session,sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 from typing import List
 import models, schemas
 from models import User, Project, ProjectLog
 from sqlalchemy import create_engine
 from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
+from passlib.context import CryptContext
 
 DEFAULT_XP=50
 WEEK_CONSTANT=1.5
 MONTH_CONSTANT=2.0 
+LEVEL_CONSTANT=50
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./IdeaHeap.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+load_dotenv()
+SQLALCHEMY_DATABASE_URL =os.getenv("DATABASE_URL")
+if not SQLALCHEMY_DATABASE_URL:
+    raise ValueError("DATABASE_URL not found.")
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
+
 app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://localhost:5173"],
@@ -24,6 +33,14 @@ app.add_middleware(
         allow_headers=["*"]
 )
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
 def get_db():
     db = SessionLocal()
     try:
@@ -31,31 +48,37 @@ def get_db():
     finally:
         db.close()
 
+def calculate_level(xp:int)->int:
+    if xp<=0:
+        return 1;
+    return int((xp/LEVEL_CONSTANT) ** 0.5)+1
+
 def update_user_progress(user):
     today=datetime.now().date()
     last_active=user.last_active_date
-    if last_active==today:
-        return
-    if not last_active:
-        user.current_streak=1
-    elif (today-last_active).days==1:
-        user.current_streak+=1
-    elif (today-last_active).days!=1:
-        user.current_streak=1
-    xp=DEFAULT_XP
-    if user.current_streak>30:
-        xp=int(DEFAULT_XP*MONTH_CONSTANT)
-    elif user.current_streak>7:
-        xp=int(DEFAULT_XP*WEEK_CONSTANT)
-    user.total_xp+=xp
-    user.last_active_date=today
+    if last_active!=today:
+        if not last_active:
+            user.current_streak=1
+        elif (today-last_active).days==1:
+            user.current_streak+=1
+        elif (today-last_active).days!=1:
+            user.current_streak=1
+        xp=DEFAULT_XP
+        if user.current_streak>30:
+            xp=int(DEFAULT_XP*MONTH_CONSTANT)
+        elif user.current_streak>7:
+            xp=int(DEFAULT_XP*WEEK_CONSTANT)
+        user.total_xp+=xp
+        user.last_active_date=today
+    user.level=calculate_level(user.total_xp)
 
 @app.post("/users/", response_model=schemas.UserResponse)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user=db.query(User).filter(User.username==user.username).first()
     if db_user:
         raise HTTPException(status_code=400,detail="This username already exists")
-    new_user=User(username=user.username,password=user.password)
+    hashed_password = get_password_hash(user.password)
+    new_user=User(username=user.username,password=hashed_password)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -115,7 +138,7 @@ def update_user(user_id:int,user_update:schemas.UserUpdate,db:Session=Depends(ge
             raise HTTPException(status_code=400, detail="Username already taken")
         db_user.username = user_update.username
     if user_update.password is not None:
-        db_user.password = user_update.password
+        db_user.password = get_password_hash(user_update.password)
     db.commit()
     db.refresh(db_user)
     return db_user
@@ -143,6 +166,8 @@ def update_log(log_id:int,updated_log:schemas.LogUpdate,db:Session=Depends(get_d
         raise HTTPException(status_code=400,detail="Cannot edit logs of a completed project")
     if updated_log.content is not None:
         db_log.content=updated_log.content
+    if updated_log.title is not None:
+        db_log.title=updated_log.title
     db.commit()
     db.refresh(db_log)
     return db_log
