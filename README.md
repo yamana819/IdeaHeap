@@ -1,7 +1,6 @@
 # 🧠 IdeaHeap
 
 ![Status](https://img.shields.io/badge/Status-Work_In_Progress-yellow)
-![License](https://img.shields.io/badge/License-MIT-blue)
 
 **IdeaHeap** is a gamified project management tool designed for developers to handle ideas and technical workflows efficiently.
 
@@ -30,3 +29,4 @@ This project uses a modern **Monorepo** architecture.
 * **📝 Dev Logs:** Keep detailed technical logs for every project.
 * **🎨 Modern UI:** A sleek interface designed with **Tailwind CSS** (Dark Mode focused).
 * **🔒 Security:** Secure password hashing with **Bcrypt** and environment variable management.
+
