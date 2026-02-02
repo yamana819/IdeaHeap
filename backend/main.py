@@ -100,6 +100,8 @@ def create_log(project_id:int,log:schemas.LogCreate,db:Session=Depends(get_db)):
     db_project=db.query(Project).filter(Project.id==project_id).first()
     if not db_project:
         raise HTTPException(status_code=404,detail="Project not found.")
+    if db_project.status=="Idea":
+        raise HTTPException(status_code=400,detail="You must start the project before adding logs.")
     if db_project.status=="Completed":
         raise HTTPException(status_code=400,detail="Cannot add logs to a completed project")
     new_log=ProjectLog(**log.dict(),project_id=project_id)
