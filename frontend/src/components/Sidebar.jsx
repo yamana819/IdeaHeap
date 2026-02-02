@@ -43,6 +43,16 @@ const Sidebar = ({activeTab,onTabChange}) => {
                     <LogOut size={20} />
                     <span>LogOut</span>
                 </button>
+                <div className="flex flex-col items-center gap-1 text-xs text-slate-600 mt-4">
+                    <p>
+                        &copy; 2026 <span className="font-bold text-slate-500">IdeaHeap</span>
+                    </p>
+                    <div className="flex items-center gap-2 opacity-60">
+                        <span>v1.0.0</span>
+                        <span className="w-1 h-1 rounded-full bg-slate-600"></span>
+                        <span>Beta</span>
+                    </div>
+                </div>
             </div>
         </aside> 
     );
