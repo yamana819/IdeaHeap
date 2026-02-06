@@ -34,7 +34,7 @@ const Dashboard=() =>{
         fetchData();
     },[]);
 
-    const handeProjectDelete=(deletedId) =>{
+    const handleProjectDelete=(deletedId) =>{
         setProjects(prev=>prev.filter(p=>p.id !== deletedId));
     };
     const calculateProgress = () => {
@@ -58,7 +58,7 @@ const Dashboard=() =>{
                         Dashboard
                     </h2>
                     <div className="flex items-center gap-4">
-                        <div className="relative-hidden md:block">
+                        <div className="relative hidden md:block">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18}/>
                             <input 
                                 type='text'
@@ -69,8 +69,8 @@ const Dashboard=() =>{
                         <button className="p-2 text-slate-400 hover:text-white transition-colors relative">
                             <Bell size={20}/>
                         </button>
-                        <div className="w-10 h-10 rounded-full bg-linear-to-tr from indigo-600 to purple-600 flex items-center justify-center font-bold text-sm border-2 border-slate-800 shadow-lg shadow-indigo-500/20 ">
-                            {user ? user.username.substrign(0,2).toUpperCase(): '..'}
+                        <div className="w-10 h-10 rounded-full bg-linear-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-bold text-sm border-2 border-slate-800 shadow-lg shadow-indigo-500/20 ">
+                            {user ? user.username.substring(0,2).toUpperCase(): '..'}
                         </div>
                     </div>
                 </header>
@@ -90,14 +90,112 @@ const Dashboard=() =>{
                                             <h2 className="text-3xl font-bold text-white">
                                                 Hello <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-purple-400">{user?.username || 'Dev'}</span>! 👋 
                                             </h2>
+                                            <div className="flex items-center gap-3 mt-2">
+                                                <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-xs font-bold text-indigo-400 uppercase tracking-wider shadow-[0_0_10px_rgba(99,102,241,0.2)]">
+                                                    {user?.rank || "Novice"}
+                                                </span>
+                                                <span className="text-slate-400 text-sm font-medium">
+                                                    {user?.level}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="hidden md:block text-right bg-slate-900/50 p-3 rounded-lg border border-slate-800/50 backdrop-blur-sm"> 
+                                            <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Next Milestone</div>
+                                            <div className="text-xl font-mono text-white flex items-center justify-end gap-2">
+                                                <Zap size={16} className="text-yellow-400 fill-yellow-400" />
+                                                {xpLeft>0 ? `${xpLeft} XP Left` : `Level Up Ready!`}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div> 
+                                        <div className="flex justify-between text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider"> 
+                                            <span>Progress to Lvl {user ? user.level+1 : 2}</span>
+                                            <span>{user?.total_xp} / {user?.next_level_xp_limit}</span>
+                                        </div>
+                                        <div className="h-5 w-full bg-slate-950 rounded-full border border-slate-800 overflow-hidden relative shadow-inner">
+                                            <div 
+                                                className="h-full bg-linear-to-r from-indigo-600 via-purple-500 to-indigo-400 shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-1000 ease-out relative"
+                                                style={{width:`${calculateProgress()}%`}}    
+                                            >
+                                                <div className="absolute top-0 bottom-0 left-0 right-0 bg-linear-to-r from-transparent via-white/20 to-transparent w-full -translate-x-full animate-[shimmer_2s_infinite]"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <StatCard 
+                                    label="Total Projects"
+                                    value={totalProjects}
+                                    icon={Layers}
+                                    color="yellow"
+                                />
+                                <StatCard
+                                    label="In Progress"
+                                    value={inProgressCount}
+                                    icon={Clock}
+                                    color="cyan"
+                                />
+                                <StatCard
+                                    label="Completed"
+                                    value={completedCount}
+                                    icon={CheckCircle}
+                                    color="purple"
+                                />
+                                <StatCard
+                                    label="Day Streak"
+                                    value={streakCount}
+                                    icon={Flame}
+                                    color="pink"
+                                />
+                            </div>
+                            <div className="pt-4">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-xl font-bold text-slate-200 flex items-center gap-2">
+                                        Recent Projects
+                                    </h3>
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            onClick={()=>setActiveTab('projects')}
+                                            className="text-sm text-slate-500 hover:text-indigo-400 font-medium flex items-center gap-1 transition-colors"
+                                        >
+                                            View All <ArrowRight size={14}/>
+                                        </button>
+                                        <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-all shadow-lg shadow-indigo-500/25 active:scale-95">
+                                            <Plus size={18}/>
+                                            <span>New Project</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                {recentProjects.length>0 ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                        {recentProjects.map((project)=>(
+                                            <ProjectCard
+                                                key={project.id}
+                                                project={project}
+                                                onDelete={handleProjectDelete}
+                                            />
+                                        ))}
+                                    </div>
+                                ):(
+                                    <div className="flex flex-col items-center justify-center py-20 text-slate-500 border-2 border-dashed border-slate-800 rounded-xl bg-slate-900/50">
+                                        <div className="bg-slate-800 p-4 rounded-full mb-4">
+                                            <Layout size={32} className="text-slate-400"/>
+                                        </div>
+                                        <h4 className="text-lg font-medium text-slate-300">No Recent Activity</h4>
+                                        <p className="text-sm mb-6 text-slate-500">Your workspace is clean</p>
+                                        <button className="text-indigo-400 hover:text-indigo-300 text-sm font-medium flex items-center gap-1">
+                                            Start a new project <ChevronRight size={14}/>
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
                 </div>
             </main>
         </div>
-    )
-}
+    );
+};
+
+export default Dashboard;
