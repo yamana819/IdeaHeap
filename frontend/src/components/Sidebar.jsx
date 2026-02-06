@@ -1,15 +1,29 @@
 import React from 'react';
-import {LayoutDashboard,FolderKanban,Trophy,Settings,LogOut,Zap} from 'lucide-react';
+import {LayoutDashboard,FolderKanban,Trophy,Settings,LogOut,Zap,X} from 'lucide-react';
+import {Link,useLocation} from 'react-router-dom';
 
-const Sidebar = ({activeTab,onTabChange}) => {
+const Sidebar = ({isOpen,onClose}) => {
+    const location=useLocation();
     const menuItems = [
-        {id:'dashboard',label:'Dashboard',icon:LayoutDashboard},
-        {id: 'projects',label:'Projects',icon:FolderKanban},
-        {id:'stats',label:'Statistics',icon:Trophy},
-        {id:'settings',label:'Settings',icon:Settings},
+        {path:'/',label:'Dashboard',icon:LayoutDashboard},
+        {path: '/projects',label:'Projects',icon:FolderKanban},
+        {path:'/stats',label:'Statistics',icon:Trophy},
+        {path:'/settings',label:'Settings',icon:Settings},
     ];
     return (
-        <aside className="w-64 bg-slate-950 border-r border-slate-800 flex-col p-6 hidden md:flex text-slate-300 h-screen">
+        <aside className={`
+                    fixed inset-y-0 left-0 z-50 w-64 bg-slate-950 border-r border-slate-800 
+                    flex flex-col p-6 h-screen transition-transform duration-300 ease-in-out
+                    md:translate-x-0 md:static md:flex
+                    ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+                `}
+        >
+            <button
+                onClick={onClose}
+                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white md:hidden"
+            >
+                <X size={24}/>
+            </button>
             <div className="flex items-center space-x-3 mb-10 px-2">
                 <div className="bg-indigo-600 p-2 rounded-lg shadow-lg shadow-indigo-500/20 ">
                     <Zap size={24} className="text-cyan-400" fill="currentColor"/>
@@ -21,11 +35,12 @@ const Sidebar = ({activeTab,onTabChange}) => {
             <nav className="flex-1 space-y-2">
                 {menuItems.map((item) => {
                     const Icon=item.icon;
-                    const isActive=activeTab===item.id;
+                    const isActive=location.pathname===item.path;
                     return (
-                        <button
-                            key={item.id}
-                            onClick={()=> onTabChange(item.id)}
+                        <Link
+                            key={item.path}
+                            to={item.path}
+                            onClick={onClose}
                             className={`flex items-center space-x-3 w-full p-3 rounded-xl transition-all duration-200
                                 ${isActive
                                     ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
@@ -34,7 +49,7 @@ const Sidebar = ({activeTab,onTabChange}) => {
                         >
                             <Icon size={20} />
                             <span className="font-medium">{item.label}</span>
-                        </button>
+                        </Link>
                     );
                 })}
             </nav>
