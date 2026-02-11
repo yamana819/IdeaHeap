@@ -40,7 +40,7 @@ const Projects=()=>{
         const techStack=project.tech_stack || [];
         const searchMatch=
             project.title.toLowerCase().includes(searchLower) || 
-            techStack.some(tech=>tech.toLowerCase.includes(searchLower));
+            techStack.some(tech=>tech.toLowerCase().includes(searchLower));
         return statusMatch && searchMatch;
     });
 
@@ -77,17 +77,8 @@ const Projects=()=>{
                 onClose={() => setIsModalOpen(false)}
                 onProjectAdded={fetchProjects} 
             />
-            <div className="max-w-7xl mx-auto space-y-8">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-                            Projects 
-                            <span className="text-lg font-normal text-slate-500 bg-slate-900 px-3 py-1 rounded-full border border-slate-800">
-                                Total: {projects.length}
-                            </span>
-                        </h1>
-                        <p className="text-slate-400">Manage your engineering journey.</p>
-                    </div>
+            <div className="max-w-7xl mx-auto space-y-6">
+                <div className="flex justify-end">
                     <button 
                         onClick={() => setIsModalOpen(true)}
                         className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-indigo-500/25 active:scale-95"
@@ -136,7 +127,7 @@ const Projects=()=>{
                         </div>
                         <h3 className="text-xl font-bold text-white mb-2">No Projects Found</h3>
                         <p className="text-slate-400 max-w-sm text-center mb-6">
-                            Try adjusting your filters or search query.
+                            Adjust your filters or start documenting a new idea.
                         </p>
                         <button 
                             onClick={() => {setFilterStatus('All'); setSearchQuery('');}}
