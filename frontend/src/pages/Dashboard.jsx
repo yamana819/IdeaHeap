@@ -5,27 +5,30 @@ import {Link} from 'react-router-dom';
 
 import ProjectCard from '../components/ProjectCard';
 import StatCard from '../components/StatCard';
+import AddProjectModal from '../components/AddProjectModal';
 
 import {getProject} from '../services/api';
 
 const Dashboard=({user}) =>{
     const [projects,setProjects] = useState([]);
     const [loading,setLoading] = useState(true);
+    const [isModalOpen,setIsModalOpen]=useState(false);
 
     const USER_ID=1;
 
+    const fetchProjects = async () => {
+        try {
+            setLoading(true);
+            const projectsData = await getProject(USER_ID);
+            setProjects(projectsData.reverse());
+        } catch (error) {
+            console.error("Dashboard data fetch error:",error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(()=>{
-        const fetchProjects = async () => {
-            try {
-                setLoading(true);
-                const projectsData = await getProject(USER_ID);
-                setProjects(projectsData.reverse());
-            } catch (error) {
-                console.error("Dashboard data fetch error:",error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchProjects();
     },[]);
 
@@ -46,6 +49,11 @@ const Dashboard=({user}) =>{
 
     return (
         <div className="flex-1 overflow-y-auto p-8 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+            <AddProjectModal 
+                isOpen={isModalOpen}
+                onClose={()=>setIsModalOpen(false)}
+                onProjectAdded={fetchProjects}
+            />
             {loading ? (
                 <div className="flex items-center justify-center h-full text-slate-500 animate-pulse">
                     Loading dashboard data...
@@ -132,7 +140,10 @@ const Dashboard=({user}) =>{
                                 >
                                     View All <ArrowRight size={14}/>
                                 </Link>
-                                <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-all shadow-lg shadow-indigo-500/25 active:scale-95">
+                                <button 
+                                    onClick={()=>setIsModalOpen(true)}
+                                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-all shadow-lg shadow-indigo-500/25 active:scale-95"
+                                >
                                     <Plus size={18}/>
                                     <span>New Project</span>
                                 </button>
@@ -155,7 +166,10 @@ const Dashboard=({user}) =>{
                                 </div>
                                 <h4 className="text-lg font-medium text-slate-300">No Recent Activity</h4>
                                 <p className="text-sm mb-6 text-slate-500">Your workspace is clean</p>
-                                <button className="text-indigo-400 hover:text-indigo-300 text-sm font-medium flex items-center gap-1">
+                                <button 
+                                    onClick={()=>setIsModalOpen(true)}
+                                    className="text-indigo-400 hover:text-indigo-300 text-sm font-medium flex items-center gap-1"
+                                >
                                     Start a new project <ChevronRight size={14}/>
                                 </button>
                             </div>
