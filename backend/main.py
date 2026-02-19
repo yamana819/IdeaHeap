@@ -230,3 +230,14 @@ def delete_log(log_id: int, db: Session = Depends(get_db)):
     db.delete(db_log)
     db.commit()
     return {"message": "Log deleted successfully"}
+
+@app.post("/login", response_model=schemas.UserResponse)
+def login_user(user_credentials: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.username == user_credentials.username).first()
+    if not db_user or not verify_password(user_credentials.password, db_user.password):
+        raise HTTPException(
+            status_code=401, 
+            detail="Invalid username or password"
+        )
+    return db_user
+

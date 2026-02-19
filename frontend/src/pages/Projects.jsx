@@ -4,20 +4,18 @@ import { getProject } from '../services/api';
 import ProjectCard from '../components/ProjectCard';
 import AddProjectModal from '../components/AddProjectModal';
 
-const Projects=()=>{
+const Projects=({userId})=>{
     const [projects,setProjects]=useState([]);
     const [loading,setLoading]=useState(true);
     const [isModalOpen,setIsModalOpen]=useState(false);
 
     const [filterStatus,setFilterStatus]=useState('All');
     const [searchQuery,setSearchQuery]=useState('');
-    
-    const USER_ID=1;
 
     const fetchProjects= async() =>{
         try {
             setLoading(true);
-            const data=await getProject(USER_ID);
+            const data = await getProject(userId);
             setProjects(data.reverse());
         } catch (error) {
             console.error("Error loading projects.",error);
@@ -26,9 +24,9 @@ const Projects=()=>{
         }
     };
     
-    useEffect(()=>{
-        fetchProjects();
-    },[]);
+    useEffect(() => {
+    if (userId) fetchProjects();
+}, [userId]);
 
     const handleProjectDelete = (deletedId) =>{
         setProjects(prev=>prev.filter(p=>p.id!==deletedId));

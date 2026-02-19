@@ -6,7 +6,7 @@ const Header = ({ user, onMenuClick }) => {
     const location = useLocation();
     const getPageTitle = () => {
         switch (location.pathname) {
-            case '/': return 'Dashboard';
+            case '/dashboard': return 'Dashboard';
             case '/projects': return 'Projects';
             case '/stats': return 'Statistics';
             case '/settings': return 'Settings';

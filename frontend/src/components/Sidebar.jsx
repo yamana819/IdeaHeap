@@ -2,10 +2,10 @@ import React from 'react';
 import {LayoutDashboard,FolderKanban,Trophy,Settings,LogOut,Zap,X} from 'lucide-react';
 import {Link,useLocation} from 'react-router-dom';
 
-const Sidebar = ({isOpen,onClose}) => {
+const Sidebar = ({isOpen,onClose,onLogout}) => {
     const location=useLocation();
     const menuItems = [
-        {path:'/',label:'Dashboard',icon:LayoutDashboard},
+        {path:'/dashboard',label:'Dashboard',icon:LayoutDashboard},
         {path: '/projects',label:'Projects',icon:FolderKanban},
         {path:'/stats',label:'Statistics',icon:Trophy},
         {path:'/settings',label:'Settings',icon:Settings},
@@ -54,7 +54,10 @@ const Sidebar = ({isOpen,onClose}) => {
                 })}
             </nav>
             <div className="pt-6 border-t border-slate-800">
-                <button className='flex items-center space-x-3 text-red-400 hover:text-red-300 w-full p-3 transition-colors rounded-xl hover:bg-red-500/10'>
+                <button 
+                    onClick={onLogout}
+                    className='flex items-center space-x-3 text-red-400 hover:text-red-300 w-full p-3 transition-colors rounded-xl hover:bg-red-500/10'
+                >
                     <LogOut size={20} />
                     <span>LogOut</span>
                 </button>

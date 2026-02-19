@@ -1,0 +1,33 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="neon-bloom" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <linearGradient id="neon_bolt_grad" x1="22" y1="12" x2="78" y2="88" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E0F7FA"/> <stop offset="40%" stop-color="#22D3EE"/> <stop offset="100%" stop-color="#818CF8"/> </linearGradient>
+    
+    <linearGradient id="border_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+       <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.3"/>
+       <stop offset="100%" stop-color="#6366F1" stop-opacity="0.3"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="2" y="2" width="96" height="96" rx="26" fill="#0F172A" stroke="url(#border_grad)" stroke-width="1.5"/>
+  
+  <path d="M58 12L22 54H44L38 88L78 42H54L62 12Z" fill="#6366F1" filter="url(#neon-bloom)" opacity="0.3" transform="scale(1.1) translate(-5 -5)"/>
+  
+  <path d="M58 12L22 54H44L38 88L78 42H54L62 12Z" 
+        fill="url(#neon_bolt_grad)" 
+        stroke="#CFFAFE" 
+        stroke-width="1.5"
+        stroke-linejoin="round"
+        filter="url(#neon-bloom)"
+  />
+</svg>

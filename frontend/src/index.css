@@ -1,2 +1,10 @@
 @import "tailwindcss";
 @plugin "tailwind-scrollbar";
+
+html, body, #root {
+  background-color: #020617 !important; 
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
