@@ -80,7 +80,7 @@ const Stats = ({ userId }) => {
                             </div>
                             <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
                                 <div 
-                                    className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 transition-all duration-1000 relative"
+                                    className="h-full bg-linear-to-r from-indigo-500 to-cyan-400 transition-all duration-1000 relative"
                                     style={{ width: `${progressPercentage}%` }}
                                 >
                                     <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
