@@ -69,7 +69,7 @@ const Dashboard = ({ user }) => {
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div>
                                     <h2 className="text-3xl font-bold text-white">
-                                        Hello <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{user?.username || 'Dev'}</span>! 👋 
+                                        Hello <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-purple-400">{user?.username || 'Dev'}</span>! 👋 
                                     </h2>
                                     <div className="flex items-center gap-3 mt-2">
                                         <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-xs font-bold text-indigo-400 uppercase tracking-wider shadow-[0_0_10px_rgba(99,102,241,0.2)]">
@@ -95,10 +95,10 @@ const Dashboard = ({ user }) => {
                                 </div>
                                 <div className="h-5 w-full bg-slate-950 rounded-full border border-slate-800 overflow-hidden relative shadow-inner">
                                     <div 
-                                        className="h-full bg-gradient-to-r from-indigo-600 via-purple-500 to-indigo-400 shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-1000 ease-out relative"
+                                        className="h-full bg-linear-to-r from-indigo-600 via-purple-500 to-indigo-400 shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-1000 ease-out relative"
                                         style={{ width: `${calculateProgress()}%` }}    
                                     >
-                                        <div className="absolute top-0 bottom-0 left-0 right-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-full -translate-x-full animate-[shimmer_2s_infinite]"></div>
+                                        <div className="absolute top-0 bottom-0 left-0 right-0 bg-linear-to-r from-transparent via-white/20 to-transparent w-full -translate-x-full animate-[shimmer_2s_infinite]"></div>
                                     </div>
                                 </div>
                             </div>
@@ -151,7 +151,6 @@ const Dashboard = ({ user }) => {
                                 </button>
                             </div>
                         </div>
-
                         {recentProjects.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                                 {recentProjects.map((project) => (

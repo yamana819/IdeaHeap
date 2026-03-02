@@ -29,14 +29,6 @@ const Header = ({ user, onMenuClick }) => {
             </div>
 
             <div className="flex items-center gap-4">
-                <div className="relative hidden md:block">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                    <input
-                        type='text'
-                        placeholder='Search...'
-                        className="bg-slate-900 border border-slate-700 rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-indigo-500 w-64 transition-all placeholder:text-slate-600"
-                    />
-                </div>
                 <button className="p-2 text-slate-400 hover:text-white transition-colors relative">
                     <Bell size={20} />
                 </button>
