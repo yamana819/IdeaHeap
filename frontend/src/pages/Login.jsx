@@ -11,19 +11,32 @@ const Login = ({ onLoginSuccess }) => {
     
     const [formData, setFormData] = useState({
         username: '',
-        password: ''
+        password: '',
+        confirmPassword: ''
     });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
+        if (!isLoginView && formData.password !== formData.confirmPassword) {
+            toast.error("Passwords do not match!");
+            setLoading(false);
+            return;
+        }
+
         try {
             let userData;
             if (isLoginView) {
-                userData = await loginUser(formData);
+                userData = await loginUser({
+                    username: formData.username,
+                    password: formData.password
+                });
             } else {
-                userData = await createUser(formData);
+                userData = await createUser({
+                    username: formData.username,
+                    password: formData.password
+                });
             }
             localStorage.setItem('USER_ID', userData.id);
             onLoginSuccess(userData.id);
@@ -34,6 +47,8 @@ const Login = ({ onLoginSuccess }) => {
             setLoading(false);
         }
     };
+
+    const isButtonDisabled = loading || !formData.username || !formData.password || (!isLoginView && !formData.confirmPassword);
 
     return (
         <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 relative overflow-hidden">
@@ -83,9 +98,26 @@ const Login = ({ onLoginSuccess }) => {
                             </div>
                         </div>
 
+                        {!isLoginView && (
+                            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                <label className="block text-sm font-medium text-slate-400 mb-2 ml-1">Confirm Password</label>
+                                <div className="relative">
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                                    <input 
+                                        type="password" 
+                                        required
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 pl-11 pr-4 text-white focus:outline-none focus:border-indigo-500 transition-all placeholder:text-slate-600"
+                                        placeholder="••••••••"
+                                        value={formData.confirmPassword}
+                                        onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
                         <button 
                             type="submit" 
-                            disabled={loading || !formData.username || !formData.password}
+                            disabled={isButtonDisabled}
                             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-medium transition-all shadow-lg shadow-indigo-500/25 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
                         >
                             {loading ? <Loader2 className="animate-spin" size={20} /> : (
@@ -103,7 +135,7 @@ const Login = ({ onLoginSuccess }) => {
                                 type="button"
                                 onClick={() => {
                                     setIsLoginView(!isLoginView);
-                                    setFormData({username: '', password: ''});
+                                    setFormData({username: '', password: '', confirmPassword: ''});
                                 }}
                                 className="ml-2 text-indigo-400 hover:text-indigo-300 font-medium transition-colors focus:outline-none"
                             >
