@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, AreaChart, Area, Tooltip, ResponsiveContainer, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Trophy, Target, Zap, BrainCircuit, BarChart3, TrendingUp } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { getProject } from '../services/api';
+import { getProject, getUser } from '../services/api';
 
 const Stats = ({ userId }) => {
     const [projects, setProjects] = useState([]);
+    const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -13,8 +14,12 @@ const Stats = ({ userId }) => {
             if (!userId) return;
             try {
                 setLoading(true);
-                const data = await getProject(userId);
-                setProjects(data);
+                const [projectsRes, userRes] = await Promise.all([
+                    getProject(userId),
+                    getUser(userId)
+                ]);
+                setProjects(projectsRes);
+                setUserData(userRes);
             } catch (error) {
                 toast.error("Failed to load statistics data");
             } finally {
@@ -29,10 +34,18 @@ const Stats = ({ userId }) => {
     const inProgress = projects.filter(p => p.status === 'Implementation').length;
     const ideas = projects.filter(p => p.status === 'Idea').length;
 
-    const totalXP = (completed * 100) + (inProgress * 50) + (ideas * 10);
-    const currentLevel = Math.floor(totalXP / 300) + 1;
-    const xpForNextLevel = 300 - (totalXP % 300);
-    const progressPercentage = ((totalXP % 300) / 300) * 100;
+    const currentXP = userData?.total_xp || 0;
+    const currentLevel = userData?.level || 1;
+
+    const LEVEL_CONSTANT = 50;
+    const currentLevelBaseXP = LEVEL_CONSTANT * Math.pow(currentLevel - 1, 2);
+    const nextLevelXP = LEVEL_CONSTANT * Math.pow(currentLevel, 2);
+    
+    const xpForNextLevel = nextLevelXP - currentXP;
+    const xpIntoLevel = currentXP - currentLevelBaseXP;
+    const xpRequiredForLevel = nextLevelXP - currentLevelBaseXP;
+    
+    const progressPercentage = Math.min((xpIntoLevel / xpRequiredForLevel) * 100, 100) || 0;
 
     const pieData = [
         { name: 'Completed', value: completed, color: '#10b981' },
@@ -42,7 +55,7 @@ const Stats = ({ userId }) => {
 
     const areaData = projects.map((p, index) => ({
         name: `P${index + 1}`,
-        xp: (index + 1) * 30 + (p.status === 'Completed' ? 70 : 0) 
+        xp: (index + 1) * 50 + (p.status === 'Completed' ? 1000 : p.status === 'Implementation' ? 100 : 0) 
     }));
 
     if (loading) {
@@ -69,14 +82,14 @@ const Stats = ({ userId }) => {
                     
                     <div className="flex items-center gap-6 bg-slate-900/50 p-4 rounded-xl border border-slate-800/50">
                         <div className="text-center">
-                            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Rank</p>
+                            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Level</p>
                             <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 font-bold text-xl mx-auto shadow-[0_0_15px_rgba(99,102,241,0.2)]">
                                 {currentLevel}
                             </div>
                         </div>
                         <div className="w-48">
                             <div className="flex justify-between text-xs font-medium text-slate-400 mb-2">
-                                <span>{totalXP} XP</span>
+                                <span>{currentXP} XP</span>
                                 <span>{xpForNextLevel} to next</span>
                             </div>
                             <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
