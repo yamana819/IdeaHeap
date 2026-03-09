@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, AreaChart, Area, Tooltip, ResponsiveContainer, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Trophy, Target, Zap, BrainCircuit, BarChart3, TrendingUp } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { getProject } from '../services/api';
 
 const Stats = ({ userId }) => {
@@ -15,7 +16,7 @@ const Stats = ({ userId }) => {
                 const data = await getProject(userId);
                 setProjects(data);
             } catch (error) {
-                console.error("Error fetching stats:", error);
+                toast.error("Failed to load statistics data");
             } finally {
                 setLoading(false);
             }
@@ -48,7 +49,7 @@ const Stats = ({ userId }) => {
         return (
             <div className="flex-1 flex flex-col items-center justify-center text-slate-500 animate-pulse">
                 <BarChart3 size={48} className="text-indigo-500/50 mb-4" />
-                <p className="font-medium">Sistem verileri analiz ediliyor...</p>
+                <p className="font-medium">Analyzing system data...</p>
             </div>
         );
     }
@@ -151,16 +152,18 @@ const Stats = ({ userId }) => {
                             <PieChartIcon size={20} className="text-indigo-400" /> 
                             Status Distribution
                         </h3>
-                        <div className="h-64 w-full flex-1">
+                        <div className="min-h-62.5 w-full flex-1 flex items-center justify-center">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie 
                                         data={pieData} 
-                                        innerRadius={65} 
-                                        outerRadius={85} 
-                                        paddingAngle={5} 
+                                        cx="50%" 
+                                        cy="50%" 
+                                        innerRadius={60} 
+                                        outerRadius={80} 
                                         dataKey="value"
-                                        stroke="none"
+                                        stroke="#0f172a"
+                                        strokeWidth={4}
                                     >
                                         {pieData.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={entry.color} />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Bell, Zap, Trophy, Flame, Layout, CheckCircle, Clock, Layers, ArrowRight, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import ProjectCard from '../components/ProjectCard';
 import StatCard from '../components/StatCard';
 import AddProjectModal from '../components/AddProjectModal';
@@ -21,7 +22,7 @@ const Dashboard = ({ user }) => {
             const projectsData = await getProject(user.id);
             setProjects(projectsData.reverse());
         } catch (error) {
-            console.error("Dashboard data fetch error:", error);
+            toast.error("Failed to load dashboard data");
         } finally {
             setLoading(false);
         }
@@ -33,6 +34,7 @@ const Dashboard = ({ user }) => {
 
     const handleProjectDelete = (deletedId) => {
         setProjects(prev => prev.filter(p => p.id !== deletedId));
+        toast.success("Project removed from workspace");
     };
 
     const calculateProgress = () => {

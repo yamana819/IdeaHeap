@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { X, Save, Loader2, Plus } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { updateProject } from '../services/api';
 
 const EditProjectModal = ({ isOpen, onClose, project, onProjectUpdated }) => {
@@ -51,11 +52,11 @@ const EditProjectModal = ({ isOpen, onClose, project, onProjectUpdated }) => {
                 tech_stack: formData.tech_stack,
             };
             await updateProject(project.id, projectPayload);
+            toast.success('Project updated successfully!');
             onProjectUpdated(); 
             onClose(); 
         } catch (error) {
-            console.error("Error updating project:", error);
-            alert(error.response?.data?.detail || 'An error occurred. Please try again.');
+            toast.error(error.response?.data?.detail || 'Failed to update project. Please try again.');
         } finally {
             setLoading(false);
         }

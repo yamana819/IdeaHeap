@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Terminal, Lock, User as UserIcon, Loader2, ArrowRight } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { createUser, loginUser } from '../services/api';
 
 const Login = ({ onLoginSuccess }) => {
     const navigate = useNavigate();
     const [isLoginView, setIsLoginView] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
     
     const [formData, setFormData] = useState({
         username: '',
@@ -16,7 +16,6 @@ const Login = ({ onLoginSuccess }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
         setLoading(true);
 
         try {
@@ -30,8 +29,7 @@ const Login = ({ onLoginSuccess }) => {
             onLoginSuccess(userData.id);
             navigate('/dashboard');
         } catch (err) {
-            console.error("Auth error:", err);
-            setError(err.response?.data?.detail || "An unexpected error occurred.");
+            toast.error(err.response?.data?.detail || "Authentication failed. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -54,12 +52,6 @@ const Login = ({ onLoginSuccess }) => {
                     </p>
                 </div>
                 <div className="bg-[#0f172a] border border-slate-800 rounded-3xl p-8 shadow-2xl">
-                    
-                    {error && (
-                        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm text-center font-medium">
-                            {error}
-                        </div>
-                    )}
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
                             <label className="block text-sm font-medium text-slate-400 mb-2 ml-1">Username</label>
@@ -111,7 +103,6 @@ const Login = ({ onLoginSuccess }) => {
                                 type="button"
                                 onClick={() => {
                                     setIsLoginView(!isLoginView);
-                                    setError('');
                                     setFormData({username: '', password: ''});
                                 }}
                                 className="ml-2 text-indigo-400 hover:text-indigo-300 font-medium transition-colors focus:outline-none"

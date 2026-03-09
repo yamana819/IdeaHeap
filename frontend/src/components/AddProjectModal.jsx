@@ -1,62 +1,67 @@
-import React,{useState} from "react";
-import {X,Save,Loader2,Plus} from 'lucide-react';
-import {createProject} from '../services/api';
+import React, { useState } from "react";
+import { X, Save, Loader2, Plus } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { createProject } from '../services/api';
 
-const AddProjectModal = ({isOpen,onClose,onProjectAdded,userId}) =>{
-    const [loading,setLoading] = useState(false);
-    const [currentTech,setCurrentTech]=useState('');
-    const [formData,setFormData]=useState({
-        title:'',
-        description:'',
-        tech_stack:[],
+const AddProjectModal = ({ isOpen, onClose, onProjectAdded, userId }) => {
+    const [loading, setLoading] = useState(false);
+    const [currentTech, setCurrentTech] = useState('');
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        tech_stack: [],
     });
 
     if (!isOpen) return null;
-    const handleAddTech = (e) =>{
+
+    const handleAddTech = (e) => {
         if (e) e.preventDefault();
         if (!currentTech.trim() || formData.tech_stack.includes(currentTech.trim())) return;
         setFormData({
             ...formData,
-            tech_stack:[...formData.tech_stack,currentTech.trim()]
+            tech_stack: [...formData.tech_stack, currentTech.trim()]
         });
         setCurrentTech('');
     };
-    const handleRemoveTech = (techToRemove)=>{
+
+    const handleRemoveTech = (techToRemove) => {
         setFormData({
             ...formData,
-            tech_stack:formData.tech_stack.filter(tech=>tech!==techToRemove)
+            tech_stack: formData.tech_stack.filter(tech => tech !== techToRemove)
         });
     };
-    const handleSubmit = async(e) =>{
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-            const projectPayLoad ={
-                title:formData.title,
-                description:formData.description,
-                status:"Idea",
-                tech_stack:formData.tech_stack,
+            const projectPayLoad = {
+                title: formData.title,
+                description: formData.description,
+                status: "Idea",
+                tech_stack: formData.tech_stack,
             };
-            await createProject(userId,projectPayLoad);
+            await createProject(userId, projectPayLoad);
+            toast.success('Project created successfully! 🚀');
             onProjectAdded();
             onClose();
-            setFormData({title:'',description:'',tech_stack:[]});
+            setFormData({ title: '', description: '', tech_stack: [] });
             setCurrentTech('');
         } catch (error) {
-            console.error("Error adding project:",error);
-            alert('An error occured.Please try again.');
+            toast.error(error.response?.data?.detail || "Failed to create project. Please try again.");
         } finally {
             setLoading(false);
         }
     };
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                 <div className="flex justify-between items-center p-6 border-b border-slate-800">
                     <h2 className="text-xl font-bold text-white">New Project</h2>
                     <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
-                        <X size={24}/>
+                        <X size={24} />
                     </button>
                 </div>
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -68,7 +73,7 @@ const AddProjectModal = ({isOpen,onClose,onProjectAdded,userId}) =>{
                             className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition-all placeholder:text-slate-600"
                             placeholder="e.g AI Chatbot"
                             value={formData.title}
-                            onChange={(e)=>setFormData({...formData,title:e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         />
                     </div>
                     <div>
@@ -79,9 +84,9 @@ const AddProjectModal = ({isOpen,onClose,onProjectAdded,userId}) =>{
                                 className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500 placeholder:text-slate-600"
                                 placeholder="Type & Press Enter (e.g. React)"
                                 value={currentTech}
-                                onChange={(e)=>setCurrentTech(e.target.value)}
-                                onKeyDown={(e)=>{
-                                    if (e.key==='Enter') {
+                                onChange={(e) => setCurrentTech(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
                                         e.preventDefault();
                                         handleAddTech();
                                     }
@@ -92,23 +97,23 @@ const AddProjectModal = ({isOpen,onClose,onProjectAdded,userId}) =>{
                                 onClick={handleAddTech}
                                 className="bg-slate-800 hover:bg-slate-700 text-white p-2 rounded-lg border border-slate-700 transition-colors"
                             >
-                                <Plus size={24}/>
+                                <Plus size={24} />
                             </button>
                         </div>
                         <div className="flex flex-wrap gap-2 mt-3">
-                            {formData.tech_stack.map((tech,index)=>(
+                            {formData.tech_stack.map((tech, index) => (
                                 <span key={index} className="flex items-center gap-1 bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full text-sm border border-indigo-500/30">
                                     {tech}
                                     <button 
                                         type="button"
-                                        onClick={()=>handleRemoveTech(tech)}
+                                        onClick={() => handleRemoveTech(tech)}
                                         className="hover:text-white ml-1"
                                     >
-                                        <X size={14}/>
+                                        <X size={14} />
                                     </button>
                                 </span> 
                             ))}
-                            {formData.tech_stack.length===0 && (
+                            {formData.tech_stack.length === 0 && (
                                 <span className="text-slate-600 text-xs italic">No technologies added yet</span>
                             )}
                         </div>
@@ -121,7 +126,7 @@ const AddProjectModal = ({isOpen,onClose,onProjectAdded,userId}) =>{
                             className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500 resize-none placeholder:text-slate-600"
                             placeholder="Briefly describe your project..."
                             value={formData.description}
-                            onChange={(e)=> setFormData({...formData,description:e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         />
                     </div>
                     <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-800">
@@ -137,7 +142,7 @@ const AddProjectModal = ({isOpen,onClose,onProjectAdded,userId}) =>{
                             disabled={loading}
                             className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40"
                         >
-                            {loading ? <Loader2 className="animate-spin" size={20}/> : <Save size={20}/>}
+                            {loading ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
                             <span>Create Project</span>
                         </button>
                     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Layers, Clock, CheckCircle2, Trash2, Send, Rocket, AlertCircle, Edit2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { getProject, getProjectLogs, updateProject, startProject, completeProject, createLog, deleteLog } from '../services/api';
 import EditProjectModal from '../components/EditProjectModal';
 import EditLogModal from '../components/EditLogModal';
@@ -22,7 +23,7 @@ const ProjectDetails = ({ onUserUpdate, userId }) => {
         try {
             setLoading(true);
             const allProjects = await getProject(userId);
-            const currentProject = allProjects.find(p => p.id === parseInt(id));
+            const currentProject = allProjects.find(p => String(p.id) === String(id));
             if (currentProject) {
                 setProject(currentProject);
                 const projectLogs = await getProjectLogs(currentProject.id);
@@ -31,7 +32,7 @@ const ProjectDetails = ({ onUserUpdate, userId }) => {
                 setProject(null);
             }
         } catch (error) {
-            console.error(error);
+            toast.error("Failed to load project details");
         } finally {
             setLoading(false);
         }
@@ -42,33 +43,36 @@ const ProjectDetails = ({ onUserUpdate, userId }) => {
     }, [id, userId]);
 
     const handleStartProject = async () => {
-        if (!deadlineInput) return alert("Please select a target deadline first!");
-        if (window.confirm("Ready to start this project? 🚀")) {
-            try {
-                await updateProject(project.id, { deadline: deadlineInput });
-                await startProject(project.id);
-                fetchData(); 
-            } catch (error) {
-                alert(error.response?.data?.detail || "Error starting project");
-            }
+        if (!deadlineInput) {
+            return toast.error("Please select a target deadline first!");
+        }
+        
+        try {
+            await updateProject(project.id, { deadline: deadlineInput });
+            await startProject(project.id);
+            fetchData(); 
+            toast.success('Project started successfully! 🚀');
+        } catch (error) {
+            toast.error(error.response?.data?.detail || "Error starting project");
         }
     };
 
     const handleCompleteProject = async () => {
-        if (window.confirm("Mark as completed? You will earn XP! 🎉")) {
-            try {
-                await completeProject(project.id);
-                fetchData();
-                if (onUserUpdate) onUserUpdate();
-            } catch (error) {
-                alert(error.response?.data?.detail || "Error completing project");
-            }
+        try {
+            await completeProject(project.id);
+            fetchData();
+            if (onUserUpdate) onUserUpdate();
+            toast.success('Project Completed! +100 XP 🎉');
+        } catch (error) {
+            toast.error(error.response?.data?.detail || "Error completing project");
         }
     };
 
     const handleAddLog = async (e) => {
         e.preventDefault();
-        if (!newLogTitle.trim() || !newLogContent.trim()) return alert("Both Title and Content are required!");
+        if (!newLogTitle.trim() || !newLogContent.trim()) {
+            return toast.error("Both Title and Content are required!");
+        }
         try {
             await createLog(project.id, { title: newLogTitle, content: newLogContent });
             setNewLogTitle('');
@@ -76,8 +80,9 @@ const ProjectDetails = ({ onUserUpdate, userId }) => {
             const updatedLogs = await getProjectLogs(project.id);
             setLogs(updatedLogs);
             if (onUserUpdate) onUserUpdate();
+            toast.success('Log added successfully!');
         } catch (error) {
-            alert(error.response?.data?.detail || "Error adding log");
+            toast.error(error.response?.data?.detail || "Error adding log");
         }
     };
 
@@ -87,8 +92,9 @@ const ProjectDetails = ({ onUserUpdate, userId }) => {
                 await deleteLog(logId);
                 const updatedLogs = await getProjectLogs(project.id);
                 setLogs(updatedLogs);
+                toast.success('Log deleted successfully');
             } catch (error) {
-                alert(error.response?.data?.detail || "Error deleting log");
+                toast.error(error.response?.data?.detail || "Error deleting log");
             }
         }
     };

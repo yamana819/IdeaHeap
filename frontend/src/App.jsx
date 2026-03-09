@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom'; 
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster, toast } from 'react-hot-toast';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Dashboard from './pages/Dashboard';
@@ -23,7 +24,7 @@ function App() {
       const userData = await getUser(targetId);
       setUser(userData);
     } catch (error) {
-      console.error(error);
+      toast.error("Failed to load user profile");
       handleLogout();
     }
   };
@@ -36,25 +37,56 @@ function App() {
 
   const handleLoginSuccess = (id) => {
     setCurrentUserId(id);
+    toast.success("Welcome back to IdeaHeap!");
   };
 
   const handleLogout = () => {
     localStorage.removeItem('USER_ID');
     setCurrentUserId(null);
     setUser(null);
+    toast.success("Logged out successfully.");
+  };
+
+  const toasterConfig = {
+    position: "bottom-right",
+    toastOptions: {
+      duration: 3000,
+      style: {
+        background: '#0f172a',
+        color: '#fff',
+        border: '1px solid #1e293b',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
+      },
+      success: {
+        iconTheme: {
+          primary: '#10b981',
+          secondary: '#fff',
+        },
+      },
+      error: {
+        iconTheme: {
+          primary: '#ef4444',
+          secondary: '#fff',
+        },
+      },
+    }
   };
 
   if (!currentUserId) {
     return (
-      <Routes>
-        <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
+      <>
+        <Toaster {...toasterConfig} />
+        <Routes>
+          <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </>
     );
   }
 
   return (
     <div className="flex h-screen bg-[#020617] text-slate-100 font-sans overflow-hidden">
+      <Toaster {...toasterConfig} />
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} onLogout={handleLogout} />
       {isSidebarOpen && (
         <div className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />

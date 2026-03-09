@@ -1,50 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, FolderOpen } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { getProject } from '../services/api';
 import ProjectCard from '../components/ProjectCard';
 import AddProjectModal from '../components/AddProjectModal';
 
-const Projects=({userId})=>{
-    const [projects,setProjects]=useState([]);
-    const [loading,setLoading]=useState(true);
-    const [isModalOpen,setIsModalOpen]=useState(false);
+const Projects = ({ userId }) => {
+    const [projects, setProjects] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [filterStatus, setFilterStatus] = useState('All');
+    const [searchQuery, setSearchQuery] = useState('');
 
-    const [filterStatus,setFilterStatus]=useState('All');
-    const [searchQuery,setSearchQuery]=useState('');
-
-    const fetchProjects= async() =>{
+    const fetchProjects = async () => {
         try {
             setLoading(true);
             const data = await getProject(userId);
             setProjects(data.reverse());
         } catch (error) {
-            console.error("Error loading projects.",error);
+            toast.error("Failed to load projects");
         } finally {
             setLoading(false);
         }
     };
     
     useEffect(() => {
-    if (userId) fetchProjects();
-}, [userId]);
+        if (userId) fetchProjects();
+    }, [userId]);
 
-    const handleProjectDelete = (deletedId) =>{
-        setProjects(prev=>prev.filter(p=>p.id!==deletedId));
+    const handleProjectDelete = (deletedId) => {
+        setProjects(prev => prev.filter(p => p.id !== deletedId));
+        toast.success("Project deleted successfully");
     };
 
-    const filteredProjects = projects.filter(project=>{
-        const statusMatch=filterStatus==='All' || project.status===filterStatus;
-        const searchLower=searchQuery.toLowerCase();
-        const techStack=project.tech_stack || [];
-        const searchMatch=
+    const filteredProjects = projects.filter(project => {
+        const statusMatch = filterStatus === 'All' || project.status === filterStatus;
+        const searchLower = searchQuery.toLowerCase();
+        const techStack = project.tech_stack || [];
+        const searchMatch =
             project.title.toLowerCase().includes(searchLower) || 
-            techStack.some(tech=>tech.toLowerCase().includes(searchLower));
+            techStack.some(tech => tech.toLowerCase().includes(searchLower));
         return statusMatch && searchMatch;
     });
 
-    const FilterTab=({label,value,count})=>(
+    const FilterTab = ({ label, value, count }) => (
         <button 
-            onClick={()=>setFilterStatus(value)}
+            onClick={() => setFilterStatus(value)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 filterStatus === value 
                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' 
@@ -61,11 +62,12 @@ const Projects=({userId})=>{
             )}
         </button>
     );
+
     const counts = {
-        All:projects.length,
-        Idea:projects.filter(p=>p.status==='Idea').length,
-        Implementation:projects.filter(p=>p.status==='Implementation').length,
-        Completed:projects.filter(p=>p.status==='Completed').length
+        All: projects.length,
+        Idea: projects.filter(p => p.status === 'Idea').length,
+        Implementation: projects.filter(p => p.status === 'Implementation').length,
+        Completed: projects.filter(p => p.status === 'Completed').length
     };
 
     return (

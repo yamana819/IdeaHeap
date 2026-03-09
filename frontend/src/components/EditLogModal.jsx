@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { X, Save, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { updateLog } from '../services/api';
 
 const EditLogModal = ({ isOpen, onClose, log, onLogUpdated }) => {
@@ -19,11 +20,11 @@ const EditLogModal = ({ isOpen, onClose, log, onLogUpdated }) => {
         setLoading(true);
         try {
             await updateLog(log.id, formData);
+            toast.success('Log updated successfully!');
             onLogUpdated();
             onClose();
         } catch (error) {
-            console.error("Error updating log:", error);
-            alert(error.response?.data?.detail || 'An error occurred.');
+            toast.error(error.response?.data?.detail || 'Failed to update log.');
         } finally {
             setLoading(false);
         }
