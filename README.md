@@ -1,6 +1,6 @@
 # 🧠 IdeaHeap
 
-![Status](https://img.shields.io/badge/Status-Work_In_Progress-yellow)
+![Status](https://img.shields.io/badge/Status-Completed-success)
 
 **IdeaHeap** is a gamified project management tool designed for developers to handle ideas and technical workflows efficiently.
 
